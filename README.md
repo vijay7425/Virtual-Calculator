@@ -27,7 +27,7 @@ This project is a gesture-controlled virtual calculator built using Flask, OpenC
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/<your-username>/Virtual-Calculator.git
+    git clone https://github.com/vijay7425/Virtual-Calculator.git
     ```
 
 2. Navigate to the project directory:
