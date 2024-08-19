@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture-Based Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        .calculator-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333333;
+        }
+        .display {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #cccccc;
+            font-size: 20px;
+            text-align: right;
+            background-color: #f9f9f9;
+            min-height: 40px;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .button {
+            padding: 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .video-container {
+            margin-top: 20px;
+        }
+        .video-container img {
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid #cccccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Gesture-Based Calculator</h1>
+        <div class="display" id="display">0</div>
+        <div class="button-grid">
+            <button class="button" data-value="1">1</button>
+            <button class="button" data-value="2">2</button>
+            <button class="button" data-value="3">3</button>
+            <button class="button" data-value="add">+</button>
+            <button class="button" data-value="4">4</button>
+            <button class="button" data-value="5">5</button>
+            <button class="button" data-value="6">6</button>
+            <button class="button" data-value="subtract">-</button>
+            <button class="button" data-value="7">7</button>
+            <button class="button" data-value="8">8</button>
+            <button class="button" data-value="9">9</button>
+            <button class="button" data-value="multiply">*</button>
+            <button class="button" data-value="0">0</button>
+            <button class="button" data-value="clear">C</button>
+            <button class="button" data-value="equal">=</button>
+            <button class="button" data-value="divide">/</button>
+        </div>
+        <div class="video-container">
+            <h3>Video Feed:</h3>
+            <img src="{{ url_for('video_feed') }}" alt="Video Feed">
+        </div>
+    </div>
+
+    <script>
+        const buttons = document.querySelectorAll('.button');
+        let expression = '';
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.getAttribute('data-value');
+
+                if (value === 'clear') {
+                    expression = '';
+                    document.getElementById('display').innerText = '0';
+                } else if (value === 'equal') {
+                    // Handle the calculation on the server side
+                    fetch('/calculate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ expression: expression })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        expression = data.result.toString();
+                        document.getElementById('display').innerText = expression;
+                    })
+                    .catch(error => {
+                        document.getElementById('display').innerText = 'Error';
+                    });
+                } else {
+                    // Update expression
+                    if (value === 'add') {
+                        expression += '+';
+                    } else if (value === 'subtract') {
+                        expression += '-';
+                    } else if (value === 'multiply') {
+                        expression += '*';
+                    } else if (value === 'divide') {
+                        expression += '/';
+                    } else {
+                        expression += value;
+                    }
+                    document.getElementById('display').innerText = expression;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
